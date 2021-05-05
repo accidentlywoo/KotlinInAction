@@ -31,7 +31,8 @@ System.out.println(a = "bb"); // bb
 ```
 
 kotlin
-```val a = "aa";
+```
+val a = "aa";
 // print(a = "bb") 컴파일 에러 
 ```
 
