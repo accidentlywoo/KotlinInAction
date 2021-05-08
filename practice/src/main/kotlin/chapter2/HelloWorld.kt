@@ -7,6 +7,11 @@ fun main(args: Array<String>) {
     println(max(1, 2))
 
     println(max2(1, 2))
+
+    val name = if (args.size > 0) args[0] else "Kotlin"
+    println("Hello, $name!")
+    println("Hello, ${name}!")
+    println("Hello, ${if (args.size > 0) args[0] else "something"}!")
 }
 
 fun max(a: Int, b: Int) : Int {
