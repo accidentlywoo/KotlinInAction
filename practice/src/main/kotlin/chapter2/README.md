@@ -110,3 +110,26 @@ fun main(args: Array<String>){
 }
 ```
 책과 다르게 when에서 else없으면 컴파일 에러남. 버전 차이인가? :grey_question:
+
+- when과 임의의 객체를 함께 사용
+```kotlin
+fun mix (c1: Color, c2: Color) =
+	when (setOf(c1, c2)) {
+		setOf(RED, YELLOW) -> ORANGE
+		setOf(BLUE, INDIGO) -> INDIGO
+		else -> throw Exception("Dirty color")
+	}
+```
+이 함수가 아주 자주 호출된다면 ,함수 인자로 주어진 두 색을 비교하기 위해 여러 Set 인스턴스를 생상헤, 불필요한 가비지 객체가 늘어난다.
+
+인자가 없는 when 식을 사용하면 불필요한 객체 생성을 막을 수 있다.
+
+```kotlin
+fun mixOptimized(c1: Color, c2: Color) =
+	when {
+		(c1 == RED) && (c2 == ORANGE) -> ORANGE
+		(c1 == BLUE) && (c2 == INDIGO) -> INDIGO
+		else -> throw Exception("Dirty color")
+	}
+```
+
