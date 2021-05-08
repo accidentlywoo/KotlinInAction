@@ -4,15 +4,13 @@ import java.io.BufferedReader
 import java.io.StringReader
 import java.lang.NumberFormatException
 
-fun readNumber(reader: BufferedReader) : Int? {
-	try {
-		val line = reader.readLine()
-		return Integer.parseInt(line)
+fun readNumber(reader: BufferedReader) {
+	val number = try {
+		Integer.parseInt(reader.readLine())
 	} catch (e: NumberFormatException) {
-		return null
-	} finally {
-		reader.close()
+		return
 	}
+	println(number)
 }
 
 fun main() {
