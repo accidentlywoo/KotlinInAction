@@ -96,3 +96,17 @@ var 키워드는 변수값을 변경할 수 있지만 변수의 타입은 고정
 ### 3. enum과 when
 when 은 자바의 switch를 대치하되 훨씬 더 강력하며, 앞으로 더 자주 사용할 프로그래밍 요소라고 생각할 수 있다.
 
+#### 1). when을 사용해 올바른 enum 값 찾기
+```kotlin
+fun getMnemonic(color: Color) =
+	when (color) {
+		Color.RED -> "Woo"
+		Color.ORANGE -> "얼린쥐"
+		else -> "?"
+	}
+
+fun main(args: Array<String>){
+	println(getMnemonic(Color.ORANGE))
+}
+```
+책과 다르게 when에서 else없으면 컴파일 에러남. 버전 차이인가? :grey_question:
