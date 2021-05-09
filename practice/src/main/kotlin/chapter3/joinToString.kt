@@ -4,9 +4,9 @@ import java.lang.StringBuilder
 
 fun <T>joinToString(
 	collection: Collection<T>,
-	separator: String,
-	prefix: String,
-	postfix: String
+	separator: String = ", ",
+	prefix: String = "",
+	postfix: String = ""
 ): String {
 	val result = StringBuilder(prefix)
 
@@ -24,4 +24,10 @@ fun main() {
 	println(joinToString(list, "; ", "(", ")"))
 
 	println(joinToString(list, separator = " ", prefix = " ", postfix = "."))
+
+	println(joinToString(list, ",", "", ""))
+
+	println(joinToString(list))
+
+	println(joinToString(list, "; "))
 }
