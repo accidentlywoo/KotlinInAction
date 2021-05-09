@@ -254,3 +254,35 @@ val를 이용해서, 변수의 초기화 여부를 뭐식꺵이하는네 설명�
 자바 코드와 가장 큰 차이는 throws절이 코드에 없다는 점이다.
 
 다른 최신 JVM 언어와 마찬가지로 코틀린도 체크 예외와 언체크 예외를 구별하지 않는다. :heart_eyes:
+
+- try를 식으로 사용
+
+코틀린의 try 키워드는 if 나 when 과 마찬가지로 식이다. 
+
+```kotlin
+fun readNumber(reader: BufferedReader) {
+	val number = try {
+		Integer.parseInt(reader.readLine())
+	} catch (e: NumberFormatException) {
+		return // flow 중단
+	}
+	println(number)
+}
+```
+
+예외가 발생한 후 계속 진행하고 싶다면, catch 블록도 값을 만들어야 한다.
+
+```kotlin
+fun readNumber(reader: BufferedReader) {
+	val number = try {
+		Integer.parseInt(reader.readLine())
+	} catch (e: NumberFormatException) {
+		null
+	}
+	println(number)
+}
+```
+- [예제보러 가기](/../../test/kotlin/chapter2/TryCatchTest.kt) :grey_question:
+  :grey_question: : null이 null이아니고 kotlin.Unit 뭐식깽이로 나온다. 뭘까.?
+  
+
