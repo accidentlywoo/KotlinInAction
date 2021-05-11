@@ -7,6 +7,9 @@ import java.lang.IllegalArgumentException
 internal class UserTest {
 	@Test
 	fun `코드의 중복을 보여주는 예제1`() {
-		assertThatThrownBy { saveUser(User(1, "", "")) }.isInstanceOf(IllegalArgumentException::class.java)
+		assertThatThrownBy {
+//			saveUser(User(1, "", ""))
+			User(1, "", "").validateBeforeSave()
+		}.isInstanceOf(IllegalArgumentException::class.java)
 	}
 }
