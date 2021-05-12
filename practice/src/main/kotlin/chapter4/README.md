@@ -196,5 +196,49 @@ protected 멤버는 오직 어떤 클래스나 그 클래스를 상속한 클래
 
 - [코틀린 내부클래스 예제 보러가기](./Outer.kt)
 
+### 5). 봉인된 클래스: 클래스 계층 정의 시 계층 확장 제한
+when식에서 타입 검사를 할 때, 디폴트 분기인 else분기는 덕붙이게 강제한다.
 
+```kotlin
+interface Expr
+class Num(val value: Int) : Expr
+class Sum(val left: Expr, val right: Expr) : Expr
+
+fun eval(e: Expr) : Int =
+	when(e) {
+		is Num -> e.value
+		is Sum -> eval(e.right) + eval(e.left)
+		else ->
+			throw IllegalArgumentException("Unknown expression")
+	}
+
+```
+
+항상 디폴트 분기를 추가하는 게 편하지는 않다. 
+
+실수로 새로운 클래스 처리를 잊어버렸더라도 디폴트 분기가 선택되기 때문에 심각한 버그가 발생할 수 있다.
+
+코틀린은 이런 문제에 대한 해법으로 sealed클래스를 제공한다.
+
+````kotlin
+sealed class Expr{
+	class Num(val value: Int) : Expr()
+	class Sum(val left: Expr, val right: Expr) : Expr()
+}
+
+fun eval(e: Expr) : Int =
+	when(e) {
+		is Expr.Num -> e.value
+		is Expr.Sum -> eval(e.right) + eval(e.left)
+	}
+````
+
+when 식에서 sealed 클래스의 모든 하위 클래스를 처리한다면 디폴트 분기(else)가 필요 없다.
+
+sealed로 표시된 클래스는 자동으로 open이다.
+
+```kotlin
+class Num(val value: Int) : Expr()
+```
+이 선언의 맨 마지막의 Expr()는 코틀린의 클래스 초기화에 대해 다루는 다음절에서 설명
 
