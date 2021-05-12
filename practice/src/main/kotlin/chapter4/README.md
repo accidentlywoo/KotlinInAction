@@ -343,3 +343,52 @@ Secretive 클래스 안에는 주 생성자밖에 없고, 그 주 생성자는 �
 
 
 
+
+
+### 2). 상위 클래스를 다른 방식으로 초기화
+자바에서 오버로드한 생성자가 필요한 상황 중 상당수는 코틀린의 디폴트 파라미터 값과 이름붙인 인자 문법을 사용해 해결할 수 있다.
+
+인자에 대한 디폴트 값을 제공하기 위해 부 생성자를 여럿 만들지 말자.
+
+대신 파라미터의 디폴트 값을 생성자 시그니처에 직접 명시하라.
+
+가끔 여러 가지 방법으로 인스턴스를 초기화할 수 있게 다양한 생성자를 지원해야 하는 경우가 있다.
+
+````kotlin
+open class View {
+	constructor(ctx: Context) {}
+	
+	constructor(ctx: Context, attr: AttributeSet) {}
+	
+````
+
+이 클래스를 확장하면서 똑같은 부 생성자를 젖ㅇ의할 수 있다
+
+```kotlin
+class MyButton : ViewClass {
+	constructor(ctx: Context) : super(ctx)
+
+	constructor(ctx: Context, attr: AttributeSet) : super(ctx, attr)
+}
+```
+super() 키워드를 통해 자신에 대응하는 상위 클래스 생성자를 호출한다.
+
+생성자가 상위 클래스 생성자에세 객체 생성을 위임한다.
+
+마찬가지로 자바에서는 this()를 통해 클래스 자신의 다른 생성자를 호출할 수 있다.
+
+```kotlin
+ class MyButton : ViewClass {
+  constructor(ctx: Constext): this(ctx, MY_STYLE) {
+    // TODO
+  }
+  
+  constructor(ctx: Constext, attr: AttributeSet): super(ctx, attr) {
+  	// TODO
+ }
+}
+```
+
+부 생성자가 필요한 주된 이유는 자바 상호운용성이다.
+
+또, 클래스 인스턴스를 생성할 때 파라미터 목록이 다른 생성 방법이 여럿 존재하는 경우에 부 생성자를 여럿 둘 수밖에 없다.
