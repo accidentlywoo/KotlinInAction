@@ -258,3 +258,56 @@ fun tryToCountButtonClicks(button: Button): Int {
 ```
 
 위 예제는 항상 0을 반환한다. (당연한거 아닌가?)
+
+### 5. 멤버 참조
+코틀린에서는 자바8과 마찬가지로 함수를 값으로 바꿀 수 있다. 이때 이중 콜론(::)을 사용한다.
+
+```kotlin
+val getAge = Person::age
+```
+::를 사용하는 식을 멤버 참조라고 부른다.
+
+멤버 참조는 프로퍼티나 메소드를 단 하나만 호출하는 함수 값을 만들어준다.
+
+::는 클래스 이름과 여러분이 참조하려는 멤버(프로퍼티나 메소드) 이름 사이에 위치한다.
+
+참조 대상이 함수인지 프로퍼티인지와는 관계없이 멤버 참조 뒤에는 괄호를 넣으면 안된다.
+
+멤버 참조는 그 멤버를 호출하는 람다와 같은 타입이다. 따라서 다음 예처럼 그 둘을 자유롭게 바꿔 쓸 수 있다.
+
+```kotlin
+people.maxByOrNull(Person::age)
+people.maxByOrNull { p -> p.age }
+people.maxByOrNull { it.age }
+```
+
+최상위에 선언된 함수나 프로퍼티를 참조할 수도 있다.
+
+```kotlin
+fun maeve() = println("maeve")
+run(::maeve)
+```
+
+생성자 참조를 사용하면 클래스 생성 작업을 연기하거나 저장해둘 수 있다. 
+
+```kotlin
+data class Person(val name: String, val age: Int)
+
+val createPerson = ::Person
+	val p = createPerson("maeve", 20)
+	println(p)
+```
+
+확장 함수도 멤버 함수와 똑같은 방식으로 참조할 수 있다
+
+```kotlin
+fun Person.isAdult() = age >= 21
+val prdicate = Person::isAdult
+```
+
+isAdult는 Person 클래스의 멤버가 아니고 확장 함수다.
+
+그렇지만 isAdult를 호출할 때 person.isAdult()로 인스턴스 멤버 호출 구문을 쓸 수 있는 것처럼 Person::isAdult로 멤버 참조 구문을 사용해 이 확장 함수에 대한 참조를 얻을 수 있다.
+
+
+

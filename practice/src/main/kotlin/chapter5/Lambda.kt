@@ -26,4 +26,11 @@ fun main() {
 
 	val response = listOf("200 OK", "418 I', a teapot")
 	printProblemCounts(response)
+
+	fun maeve() = println("maeve")
+	run(::maeve)
+
+	val createPerson = ::Person
+	val p = createPerson("maeve", 20)
+	println(p)
 }
