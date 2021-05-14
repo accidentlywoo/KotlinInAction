@@ -194,5 +194,67 @@ val sum = {x: Int, y: Int ->
 println(sum(1,2))
 ```
 
+### 4. 현재 영역에 있는 변수에 접근
+람다를 함수 안에서 정의하면 함수의 파라미터뿐 아니라 람다 정의의 앞에 선언된 로컬 변수까지 람다에서 모두 사용할 수 있다.
 
-### 4. 
+이런 기능을 보여주기 위해 forEach 표준 함수를 사용해보자.
+
+forEach는 가장 기본적인 컬렉션 조작 함수 중 하나다. forEach는 컬렉션의 모든 원소에 대해 람다를 호출해준다.
+
+forEach는 일반적인 for 루프보다 훨씬 간결하지만 그렇다고 다른 장점이 많지는 않다.
+
+```kotlin
+fun printMessagesWithPrefix(message: Collection<String>, prefix: String) {
+	message.forEach{
+		println("${prefix} $it")
+	}
+}
+
+fun main() {
+	val errors = listOf("403 Forbidden", "404 Not Found")
+	printMessagesWithPrefix(errors, "Error: ")
+}
+```
+자바와 다른 점 중 중요한 한 가지는 코틀린 람다 안에서 파이널 변수가 아닌 변수에 접근할 수 있다는 점이다.
+
+또한 람다 안에서 바깥의 변수를 변경해도 된다.
+
+```kotlin
+fun printProblemCounts(response: Collection<String>) {
+	var clientErrors = 0
+	var serverErrors = 0
+	response.forEach {
+		if (it.startsWith("4")) {
+			clientErrors++ // 람다 안에서 암다 밖의 변수를 변경한다.
+		} else if (it.startsWith("5")) {
+			serverErrors++
+		}
+	}
+
+	println("${clientErrors} client errors, ${serverErrors} server errors")
+}
+```
+코틀린에서는 자바와 달리 람다에서 람다 밖 함수에 있는 파이널이 아닌 변수에 접근할 수 있고, 그 변수를 변경할 수도 있다.
+
+예제에서 prefix, clientErrors, serverErrors와 같이 람다 안에서 사용하는 외부 변수를 '람다가 포획한 변수'라고 부른다.
+
+기본적으로 함수 안에 정의된 로컬 변수의 생명주기는 함수가 반환되면 끝난다.
+
+하지만 어떠 함수가 자신의 로컬 변수를 포획한 람다를 반환하거나 다른 변수에 저장한다면 로컬 변수의 생명주기와 함수의 생명주기가 달라질 수 있다.
+
+람다가 포획한 변수에따라 생명주기가 호도리~ (209페이지 읽기 정리 Pass)
+
+
+한 가지 꼭 알아둬야 할 함정이 있다.
+
+람다를 이벤트 핸들러나 다른 비동기적으로 실행되는 코드로 활용하는 경우 함수 호출이 끝난 다음에 로컬 변수가 변경될 수도 있다.
+
+```kotlin
+fun tryToCountButtonClicks(button: Button): Int {
+  var clicks = 0
+  button.onClick { clicks++ }
+  return clicks
+}
+```
+
+위 예제는 항상 0을 반환한다. (당연한거 아닌가?)
