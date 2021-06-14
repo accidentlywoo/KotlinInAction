@@ -12,6 +12,9 @@
 코틀린 표준 라이브러리를 람다를 많이 사용한다.
 
 ## 람다 식과 멤버 참조
+
+무명 내부 클래스를 통해 코드를 함수에 넘기거나 변수에 저장할 수 있는 번거로운 코드
+
 ```java
 button.setOnClickListener(new OnClickListener() {
    @Override
@@ -20,10 +23,14 @@ button.setOnClickListener(new OnClickListener() {
     }
 });
 ```
+
+코틀린에서는 자바8과 마찬가지로 람다를 쓸 수 있다.
 ```kotlin
 button.setOnClickListener {/* 클릭 시 수행할 동작 */}
 ```
 이 코틀린 코드는 자바 무명 내부 클래스와 같은 역할을 하지만 훨씬 더 간결하다.
+
+람다를 메소드가 하나뿐인 무명 객체 대신 사용할 수 있다는 사실을 보여준다.
 
 ### 2. 람다와 컬렉션
 코드에서 중복을 제거하는 것은 프로그래밍 스타일을 개선하는 중요한 방법 중 하나다.
@@ -56,7 +63,8 @@ fun findTheOldest(people: List<Person>) {
 }
 ```
 - [위 코드 통으로 보러가기](./RawCollection.kt)
-
+위같은 방식은 상당히 많은 코드가 들어있기  때문에 작성하다 실수를 저지르시 쉽다.
+  
 코틀린에는 더 좋은 방법이 있다. 라이브러리 함수를 쓰면 된다.
 
 ```kotlin
@@ -83,7 +91,7 @@ people.maxByOrNull(Person::age)
 
 ### 3. 람다 식의 문법
 
-람다는 값처럼 여기저기 전달할 수 있는 동작의 모음이다.
+***람다는 값처럼 여기저기 전달할 수 있는 동작의 모음이다.***:heart_eyes:
 
 람다를 따로 선언해서 변수에 저장할 수도 있다. 
 
@@ -165,7 +173,7 @@ people.maxByOrNull { p -> p.age } // 컴파일러 타입 추론
 
 컴파일러가 타입을 모르겠다고 불평할 경우에만 타입을 명시한다.
 
-마지막으로 람다의 파라미터 이름을 디폴트 이름인 it으로 바꾸면 람다 식을 더 간단하게 만들 수 있다.
+마지막으로 람다의 파라미터 이름을 ***디폴트 이름인 it***으로 바꾸면 람다 식을 더 간단하게 만들 수 있다.:heart_eyes:
 
 ```kotlin
 people.maxByOrNull { it.age }
@@ -234,7 +242,7 @@ fun printProblemCounts(response: Collection<String>) {
 	println("${clientErrors} client errors, ${serverErrors} server errors")
 }
 ```
-코틀린에서는 자바와 달리 람다에서 람다 밖 함수에 있는 파이널이 아닌 변수에 접근할 수 있고, 그 변수를 변경할 수도 있다.
+***코틀린에서는 자바와 달리 람다에서 람다 밖 함수에 있는 파이널이 아닌 변수에 접근할 수 있고, 그 변수를 변경할 수도 있다.***:heart_eyes:
 
 예제에서 prefix, clientErrors, serverErrors와 같이 람다 안에서 사용하는 외부 변수를 '람다가 포획한 변수'라고 부른다.
 
@@ -288,7 +296,7 @@ fun maeve() = println("maeve")
 run(::maeve)
 ```
 
-생성자 참조를 사용하면 클래스 생성 작업을 연기하거나 저장해둘 수 있다. 
+생성자 참조를 사용하면 클래스 생성 작업을 연기하거나 저장해둘 수 있다. :heart_eyes:
 
 ```kotlin
 data class Person(val name: String, val age: Int)
@@ -304,10 +312,52 @@ val createPerson = ::Person
 fun Person.isAdult() = age >= 21
 val prdicate = Person::isAdult
 ```
-
 isAdult는 Person 클래스의 멤버가 아니고 확장 함수다.
 
 그렇지만 isAdult를 호출할 때 person.isAdult()로 인스턴스 멤버 호출 구문을 쓸 수 있는 것처럼 Person::isAdult로 멤버 참조 구문을 사용해 이 확장 함수에 대한 참조를 얻을 수 있다.
+
+- 바운드 멤버 참조
+코틀린 1.1 부터는 바운드 멤버 참조(bound member reference)를 지원한다.
+  
+바운드 멤버 참조를 사용하면  멤버 참조를 생성할 때 클래스 인스턴스를 함께 저장한 다음 나중에 그 인스턴스에 대해 멤버를 호출해준다.
+
+따라서 호출 시 수신 대상 객체를 별도로 지정해 줄 필요가 없다.
+
+```kotlin
+val p = Person("maeve", 19)
+val personsAgeFunction = Person::age
+println(personsAgeFunction(p))
+// 기존 일반 동작 
+val maeveAgeFunction = p::age
+println(personsAgeFunction())
+//kotlin 1.1부터 사용할 수 있는 바운드 참조
+```
+
+## 컬렉션 함수형 API 
+filter, map 함수와 그 함수를 뒷받침하는 개념으로부터 시작한다.
+
+또 다른 유용한 함수를 살펴본다.
+
+설명하는 함수 중에 코들린을 설계한 사람이 발명한 함수는 전혀 없다.
+
+이와 같거나 비슷한 함수를 C#, 그루비, 스칼라 등 람다를 지원하는 대부분의 언어에서 찾아볼 수 있다.
+
+### 1). 필수적인 함수: filter와 map
+filter함수는 컬렉션을 이터레이션하면서 주어진 람다에 각 원소를 넘겨서 람다가 true를 반환하는 원소만 모은다.
+
+filter 함수는 컬렉션에서 원치 않는 우너소를 제거한다.
+
+하지만 filter는 원소를 변환할 수 없다. 원소를 변환하려면 map 함수를 사용해야 한다.
+
+map 함수는 주어진 람다를 컬렉션의 각 원소에 적용한 결과를 모아서 새 컬렉션을 만든다.
+
+맵의 경우 키와 값을 처리하는 함수가 따로 존재한다.
+
+filterKeys와 mapKeys는 키를 걸러 내거나 변환하고, filterValues와 mapValues는 값을 걸러 내거나 변환한다.
+
+### 2). all, any, count, find: 컬렉션에 술어 적용
+
+### 3). groupBy: 리스트를 여러 그룹으로 이뤄진 맵으로 변경
 
 
 
