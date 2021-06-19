@@ -345,19 +345,152 @@ filter, map 함수와 그 함수를 뒷받침하는 개념으로부터 시작한
 ### 1). 필수적인 함수: filter와 map
 filter함수는 컬렉션을 이터레이션하면서 주어진 람다에 각 원소를 넘겨서 람다가 true를 반환하는 원소만 모은다.
 
-filter 함수는 컬렉션에서 원치 않는 우너소를 제거한다.
+```kotlin
+data class Person(val name: String, val age: Int)
+
+val list = listOf(1, 2, 3, 4, 5)
+println(list.filter { it % 2 == 0 })
+// -> [2, 4]
+
+val people = listOf(Person("Alice", 29), Person("Maeve", 19))
+println(people.filter { it.age > 25 })
+// [Person(name=Alice, age=29]
+```
+filter 함수는 컬렉션에서 원치 않는 원소를 제거한다.
 
 하지만 filter는 원소를 변환할 수 없다. 원소를 변환하려면 map 함수를 사용해야 한다.
 
 map 함수는 주어진 람다를 컬렉션의 각 원소에 적용한 결과를 모아서 새 컬렉션을 만든다.
 
+```kotlin
+val list = listOf(1, 2, 3, 4, 5)
+println(list.map { it * it })
+// [1, 4, 9, 16]
+val people = listOf(Person("Alice", 29), Person("Maeve", 19))
+println(people.map { it.name })
+// [Alice, Maeve]
+println(people.filter { it.age < 25}.map(Person::name))
+println(people.filter { it.age < 25}.map { it.name })
+// [Maeve]
+```
+람다를 남발하면 안되는 케이스
+```kotlin
+people.filter { it.age == people.maxByOrNull(Person::age)!!.age }
+```
+위 코드는 people변수가 담긴 리스트의 양 만큼 최댓값을 계속 반복한다. 불필요한 연산을 없애보자
+
+```kotlin
+val maxAge = people.maxByOrNull(Person::age)!!.age
+people.filter { it.age == maxAge }
+```
+
+꼭 필요하지 않은 경우 굳이 계산을 반복하지 말라.! 항상 작성한 코드로 인해 어떤일이 명확히 이해해야 한다.
+
+필터와 변환 함수를 맵에 적용할 수도 있다.
+
+```kotlin
+val numbers = mapOf(0 to "zero", 1 to "one")
+println(numbers.mapValues { it.value.toUpperCase() })
+// {0=ZERO, 1=ONE}
+```
 맵의 경우 키와 값을 처리하는 함수가 따로 존재한다.
 
 filterKeys와 mapKeys는 키를 걸러 내거나 변환하고, filterValues와 mapValues는 값을 걸러 내거나 변환한다.
 
 ### 2). all, any, count, find: 컬렉션에 술어 적용
+컬렉션에 대해 자주 수행하는 연산으로 컬렉션의 모든 원소가 어떤 조건을 만족하는지 판단하는 연산이 있다.
+
+코틀린에서는 all과 any가 이런 연산이다.
+
+count 함수는 조건을 만족하는 원소의 개수를 반환하며,
+
+find 함수는 조건을 만족하는 첫 번쨰 원소를 반환한다.
+
+나이가 25살 이하인지 판단하는 술어 함수를 만들어보자
+
+```kotlin
+val canBeInClub25 = { p: Person -> p.age <= 25 }
+```
+모든 원소가 이 술어를 만족하는지 궁금하다면 all 함수를 쓴다.
+
+```kotlin
+val people = listOf(Person("Alice", 29), Person("Maeve", 19))
+println(people.all(canBeInClub25))
+// false
+```
+
+술어를 만족하는 원소가 하나라도 있는지 궁금하다면 any를 쓴다.
+```kotlin
+val people = listOf(Person("Alice", 29), Person("Maeve", 19))
+println(people.any(canBeInClub25))
+// true
+```
+
+!all을 수행하는 결과는 any를 수행한 결과와 같다
+```kotlin
+val people = listOf(Person("Alice", 29), Person("Maeve", 19))
+println(!people.all(canBeInClub25))
+// true
+```
+
+술어를 만족하는 원소의 갯수를 구하려면 count를 사용한다.
+
+```kotlin
+val people = listOf(Person("Alice", 29), Person("Maeve", 19))
+println(people.count(canBeInClub25))
+// 1
+```
+
+술어를 만족하는 원소를 하나 찾고 싶으면 find 함수를 사용한다.
+
+```kotlin
+val people = listOf(Person("Alice", 29), Person("Maeve", 19))
+println(people.find(canBeInClub25))
+// Person(name=Maeve, age=19)
+```
+
+find는 조건을 만족하는 원소가 하나라도 있는 경우 가장 먼저 조건을 만족한다고 확인된 원소를 반환하며,
+
+만족하는 원소가 없을 경우 null을 반환한다.
+
+find는 firstOrNull과 같다.
 
 ### 3). groupBy: 리스트를 여러 그룹으로 이뤄진 맵으로 변경
+컬렉션의 모든 원소를 어떤 특성에 따라 여러 그룹으로 나누고 싶다면 groupBy 함수를 사용하자.
 
+```kotlin
+val people = listOf(Person("Alice", 29), Person("Maeve", 19))
+println(people.groupBy { it.age })
+// {19=[Person(name=Maeve, age=19)], 29=[Person(name=Alice, age=29)]}
+```
+
+groupBy의 결과 타입은 Map<Int, List<Person>> 이다.
+
+필요하면 이 맵을 mapKeys나 mapValues 등을 사용해 변경할 수 있다.
+
+```kotlin
+val list = listOf("a", "ab", "b")
+println(list.groupBy(String::first))
+// {a=[a, ab], b=[b] }
+```
+first는 String의 확장 함수다. 멤버 참조를 사용해 first에 접근할 수 있다.
+
+### 4). flatMap과 flatten : 중첩된 컬렉션 안의 원소 처리
+
+## 3. 지연 계산(lazy) 컬렉션 연산
+
+### 1). 시퀀스 연산 실행 : 중간 연산과 최종 연산
+
+## 4. 자바 함수형 인터페이스 사용
+
+### 1). 자바 메소드에 람다를 인자로 전달
+
+### 2). SAM 생성자: 람다를 함수형 인터페이스로 명시적으로 변경
+
+## 5. 수식 객체 지정 람다: with와 apply :pushpin: :heart_eyes:
+
+### 1). with 함수 :pushpin: :heart_eyes:
+
+### 2). apply 함수 :pushpin: :heart_eyes:
 
 
