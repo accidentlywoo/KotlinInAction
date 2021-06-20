@@ -1,4 +1,5 @@
 # 람다로 프로그래밍
+
 1. 람다 식과 멤버 참조
 2. 함수형 스타일로 컬렉션 다루기
 3. 시퀀스: 지연 컬렉션 연산
@@ -16,23 +17,26 @@
 무명 내부 클래스를 통해 코드를 함수에 넘기거나 변수에 저장할 수 있는 번거로운 코드
 
 ```java
-button.setOnClickListener(new OnClickListener() {
-   @Override
-    public void onClick(View view) {
-        /* 클릭 시 수행할 동작 */   
-    }
-});
+button.setOnClickListener(new OnClickListener(){
+@Override
+public void onClick(View view){
+        /* 클릭 시 수행할 동작 */
+        }
+        });
 ```
 
 코틀린에서는 자바8과 마찬가지로 람다를 쓸 수 있다.
+
 ```kotlin
-button.setOnClickListener {/* 클릭 시 수행할 동작 */}
+button.setOnClickListener {/* 클릭 시 수행할 동작 */ }
 ```
+
 이 코틀린 코드는 자바 무명 내부 클래스와 같은 역할을 하지만 훨씬 더 간결하다.
 
 람다를 메소드가 하나뿐인 무명 객체 대신 사용할 수 있다는 사실을 보여준다.
 
 ### 2. 람다와 컬렉션
+
 코드에서 중복을 제거하는 것은 프로그래밍 스타일을 개선하는 중요한 방법 중 하나다.
 
 컬렉션을 다룰 때 수행하는 대부분의 작업은 몇 가지 일반적인 패턴에 속한다.
@@ -46,9 +50,11 @@ button.setOnClickListener {/* 클릭 시 수행할 동작 */}
 ```kotlin
 data class Person(val name: String, val age: Int)
 ```
+
 사람들로 이뤄진 리스트가 있고 그중에 가장 연장자를 찾고 싶다.
 
 컬렉션에서 직접 검색하기
+
 ```kotlin
 fun findTheOldest(people: List<Person>) {
 	var maxAge = 0
@@ -62,9 +68,10 @@ fun findTheOldest(people: List<Person>) {
 	println(theOldest)
 }
 ```
+
 - [위 코드 통으로 보러가기](./RawCollection.kt)
-위같은 방식은 상당히 많은 코드가 들어있기  때문에 작성하다 실수를 저지르시 쉽다.
-  
+  위같은 방식은 상당히 많은 코드가 들어있기 때문에 작성하다 실수를 저지르시 쉽다.
+
 코틀린에는 더 좋은 방법이 있다. 라이브러리 함수를 쓰면 된다.
 
 ```kotlin
@@ -72,9 +79,11 @@ println(people.maxByOrNull { it.age })
 ```
 
 모든 컬렉션에 대해 maxBy 함수를 호출할 수 있다.
+
 ```kotlin
 { it.age }
 ```
+
 이 코드는 컬렉션의 원소를 인자로 받아서 비교에 사용할 값을 반환한다.
 
 이런 식으로 단지 함수나 프로퍼티를 반환하는 역할을 수행하는 람다는 멤버 참조로 대치할 수 있다.
@@ -88,18 +97,18 @@ people.maxByOrNull(Person::age)
 
 그렇게 람다나 멤버 참조를 인자로 받는 함수를 통해 개선 코드는 더 짧고 더 이해하기 쉽다.
 
-
 ### 3. 람다 식의 문법
 
 ***람다는 값처럼 여기저기 전달할 수 있는 동작의 모음이다.***:heart_eyes:
 
-람다를 따로 선언해서 변수에 저장할 수도 있다. 
+람다를 따로 선언해서 변수에 저장할 수도 있다.
 
 하지만 함수에 인자로 넘기면서 바로 람다를 정의하는 경우가 대부분이다.
 
-람다식을 선언하는 방법 > 
+람다식을 선언하는 방법 >
+
 ```kotlin
-{x: Int, y: Int -> x + y }
+{ x: Int, y: Int -> x + y }
 ```
 
 코틀린 람다 식은 항상 중괄호로 둘러싸여 있다.
@@ -120,6 +129,7 @@ println(sum(1, 2))
 ```kotlin
 { println(42) }()
 ```
+
 코드 블록을 쌈싸는 것보다 명시적이고 가독성좋은 run을 사용하자. run은 인자로 받은 람다를 실행해주는 라이브러리이다.
 
 ```kotlin
@@ -131,7 +141,7 @@ run { println(42) }
 다시 사람들 중 연장자를 찾는 코드로 호도리!
 
 ```kotlin
-people.maxByOrNull({p: Pereson -> p.age })
+people.maxByOrNull({ p: Pereson -> p.age })
 ```
 
 이코드는 번잡하다(자바같다) 한단계씩 개선해보자
@@ -151,10 +161,11 @@ people.maxByOrNull { p: Person -> p.age }
 ```
 
 3장에서 잠깐 등장한 joinToString 예제를 다시 보자
+
 ```kotlin
 val people = listOf(Person("이몽룡", 29), Person("성춘향", 31))
 val names = people.joinToString(separator = " ",
-                                transform = {p: Person -> p.name})
+	transform = { p: Person -> p.name })
 println(names)
 ```
 
@@ -191,18 +202,20 @@ people.maxByOrNull { it.age }
 val getAge = { p: Person -> p.age }
 people.maxByOrNull(getAge)
 ```
+
 여러줄로 이뤄진 람다는 본문 맨 마지막에 있는 식이 람다의 결과 값이 된다.
 
 ```kotlin
-val sum = {x: Int, y: Int -> 
-  println("꺄앙!!!")
-  x + y
+val sum = { x: Int, y: Int ->
+	println("꺄앙!!!")
+	x + y
 }
 
-println(sum(1,2))
+println(sum(1, 2))
 ```
 
 ### 4. 현재 영역에 있는 변수에 접근
+
 람다를 함수 안에서 정의하면 함수의 파라미터뿐 아니라 람다 정의의 앞에 선언된 로컬 변수까지 람다에서 모두 사용할 수 있다.
 
 이런 기능을 보여주기 위해 forEach 표준 함수를 사용해보자.
@@ -213,7 +226,7 @@ forEach는 일반적인 for 루프보다 훨씬 간결하지만 그렇다고 다
 
 ```kotlin
 fun printMessagesWithPrefix(message: Collection<String>, prefix: String) {
-	message.forEach{
+	message.forEach {
 		println("${prefix} $it")
 	}
 }
@@ -223,6 +236,7 @@ fun main() {
 	printMessagesWithPrefix(errors, "Error: ")
 }
 ```
+
 자바와 다른 점 중 중요한 한 가지는 코틀린 람다 안에서 파이널 변수가 아닌 변수에 접근할 수 있다는 점이다.
 
 또한 람다 안에서 바깥의 변수를 변경해도 된다.
@@ -242,6 +256,7 @@ fun printProblemCounts(response: Collection<String>) {
 	println("${clientErrors} client errors, ${serverErrors} server errors")
 }
 ```
+
 ***코틀린에서는 자바와 달리 람다에서 람다 밖 함수에 있는 파이널이 아닌 변수에 접근할 수 있고, 그 변수를 변경할 수도 있다.***:heart_eyes:
 
 예제에서 prefix, clientErrors, serverErrors와 같이 람다 안에서 사용하는 외부 변수를 '람다가 포획한 변수'라고 부른다.
@@ -252,27 +267,28 @@ fun printProblemCounts(response: Collection<String>) {
 
 람다가 포획한 변수에따라 생명주기가 호도리~ (209페이지 읽기 정리 Pass)
 
-
 한 가지 꼭 알아둬야 할 함정이 있다.
 
 람다를 이벤트 핸들러나 다른 비동기적으로 실행되는 코드로 활용하는 경우 함수 호출이 끝난 다음에 로컬 변수가 변경될 수도 있다.
 
 ```kotlin
 fun tryToCountButtonClicks(button: Button): Int {
-  var clicks = 0
-  button.onClick { clicks++ }
-  return clicks
+	var clicks = 0
+	button.onClick { clicks++ }
+	return clicks
 }
 ```
 
 위 예제는 항상 0을 반환한다. (당연한거 아닌가?)
 
 ### 5. 멤버 참조
+
 코틀린에서는 자바8과 마찬가지로 함수를 값으로 바꿀 수 있다. 이때 이중 콜론(::)을 사용한다.
 
 ```kotlin
 val getAge = Person::age
 ```
+
 ::를 사용하는 식을 멤버 참조라고 부른다.
 
 멤버 참조는 프로퍼티나 메소드를 단 하나만 호출하는 함수 값을 만들어준다.
@@ -302,8 +318,8 @@ run(::maeve)
 data class Person(val name: String, val age: Int)
 
 val createPerson = ::Person
-	val p = createPerson("maeve", 20)
-	println(p)
+val p = createPerson("maeve", 20)
+println(p)
 ```
 
 확장 함수도 멤버 함수와 똑같은 방식으로 참조할 수 있다
@@ -312,14 +328,14 @@ val createPerson = ::Person
 fun Person.isAdult() = age >= 21
 val prdicate = Person::isAdult
 ```
+
 isAdult는 Person 클래스의 멤버가 아니고 확장 함수다.
 
 그렇지만 isAdult를 호출할 때 person.isAdult()로 인스턴스 멤버 호출 구문을 쓸 수 있는 것처럼 Person::isAdult로 멤버 참조 구문을 사용해 이 확장 함수에 대한 참조를 얻을 수 있다.
 
-- 바운드 멤버 참조
-코틀린 1.1 부터는 바운드 멤버 참조(bound member reference)를 지원한다.
-  
-바운드 멤버 참조를 사용하면  멤버 참조를 생성할 때 클래스 인스턴스를 함께 저장한 다음 나중에 그 인스턴스에 대해 멤버를 호출해준다.
+- 바운드 멤버 참조 코틀린 1.1 부터는 바운드 멤버 참조(bound member reference)를 지원한다.
+
+바운드 멤버 참조를 사용하면 멤버 참조를 생성할 때 클래스 인스턴스를 함께 저장한 다음 나중에 그 인스턴스에 대해 멤버를 호출해준다.
 
 따라서 호출 시 수신 대상 객체를 별도로 지정해 줄 필요가 없다.
 
@@ -333,7 +349,8 @@ println(personsAgeFunction())
 //kotlin 1.1부터 사용할 수 있는 바운드 참조
 ```
 
-## 컬렉션 함수형 API 
+## 컬렉션 함수형 API
+
 filter, map 함수와 그 함수를 뒷받침하는 개념으로부터 시작한다.
 
 또 다른 유용한 함수를 살펴본다.
@@ -343,6 +360,7 @@ filter, map 함수와 그 함수를 뒷받침하는 개념으로부터 시작한
 이와 같거나 비슷한 함수를 C#, 그루비, 스칼라 등 람다를 지원하는 대부분의 언어에서 찾아볼 수 있다.
 
 ### 1). 필수적인 함수: filter와 map
+
 filter함수는 컬렉션을 이터레이션하면서 주어진 람다에 각 원소를 넘겨서 람다가 true를 반환하는 원소만 모은다.
 
 ```kotlin
@@ -356,6 +374,7 @@ val people = listOf(Person("Alice", 29), Person("Maeve", 19))
 println(people.filter { it.age > 25 })
 // [Person(name=Alice, age=29]
 ```
+
 filter 함수는 컬렉션에서 원치 않는 원소를 제거한다.
 
 하지만 filter는 원소를 변환할 수 없다. 원소를 변환하려면 map 함수를 사용해야 한다.
@@ -369,14 +388,17 @@ println(list.map { it * it })
 val people = listOf(Person("Alice", 29), Person("Maeve", 19))
 println(people.map { it.name })
 // [Alice, Maeve]
-println(people.filter { it.age < 25}.map(Person::name))
-println(people.filter { it.age < 25}.map { it.name })
+println(people.filter { it.age < 25 }.map(Person::name))
+println(people.filter { it.age < 25 }.map { it.name })
 // [Maeve]
 ```
+
 람다를 남발하면 안되는 케이스
+
 ```kotlin
 people.filter { it.age == people.maxByOrNull(Person::age)!!.age }
 ```
+
 위 코드는 people변수가 담긴 리스트의 양 만큼 최댓값을 계속 반복한다. 불필요한 연산을 없애보자
 
 ```kotlin
@@ -393,11 +415,13 @@ val numbers = mapOf(0 to "zero", 1 to "one")
 println(numbers.mapValues { it.value.toUpperCase() })
 // {0=ZERO, 1=ONE}
 ```
+
 맵의 경우 키와 값을 처리하는 함수가 따로 존재한다.
 
 filterKeys와 mapKeys는 키를 걸러 내거나 변환하고, filterValues와 mapValues는 값을 걸러 내거나 변환한다.
 
 ### 2). all, any, count, find: 컬렉션에 술어 적용
+
 컬렉션에 대해 자주 수행하는 연산으로 컬렉션의 모든 원소가 어떤 조건을 만족하는지 판단하는 연산이 있다.
 
 코틀린에서는 all과 any가 이런 연산이다.
@@ -411,6 +435,7 @@ find 함수는 조건을 만족하는 첫 번쨰 원소를 반환한다.
 ```kotlin
 val canBeInClub25 = { p: Person -> p.age <= 25 }
 ```
+
 모든 원소가 이 술어를 만족하는지 궁금하다면 all 함수를 쓴다.
 
 ```kotlin
@@ -420,6 +445,7 @@ println(people.all(canBeInClub25))
 ```
 
 술어를 만족하는 원소가 하나라도 있는지 궁금하다면 any를 쓴다.
+
 ```kotlin
 val people = listOf(Person("Alice", 29), Person("Maeve", 19))
 println(people.any(canBeInClub25))
@@ -427,6 +453,7 @@ println(people.any(canBeInClub25))
 ```
 
 !all을 수행하는 결과는 any를 수행한 결과와 같다
+
 ```kotlin
 val people = listOf(Person("Alice", 29), Person("Maeve", 19))
 println(!people.all(canBeInClub25))
@@ -456,6 +483,7 @@ find는 조건을 만족하는 원소가 하나라도 있는 경우 가장 먼�
 find는 firstOrNull과 같다.
 
 ### 3). groupBy: 리스트를 여러 그룹으로 이뤄진 맵으로 변경
+
 컬렉션의 모든 원소를 어떤 특성에 따라 여러 그룹으로 나누고 싶다면 groupBy 함수를 사용하자.
 
 ```kotlin
@@ -473,15 +501,198 @@ val list = listOf("a", "ab", "b")
 println(list.groupBy(String::first))
 // {a=[a, ab], b=[b] }
 ```
+
 first는 String의 확장 함수다. 멤버 참조를 사용해 first에 접근할 수 있다.
 
 ### 4). flatMap과 flatten : 중첩된 컬렉션 안의 원소 처리
 
+flatMap 함수는 먼저 인자로 주어진 람다를 컬렉션의 모든 객체에 적용하고(또는 매핑),
+
+람다를 적용한 결과 얻어지는 여러 리스트를 한 리스트로 모은다.
+
+```kotlin
+val strings = listOf("abc", "def")
+println(strings.flatMap { it.toList() })
+// [a, b, c, d, e, f]
+```
+
+toList 함수를 문자열에 적용하면 그 문자열에 속한 모든 문자로 이뤄진 리스트가 만들어진다.
+
+Book 으로 표현한 책에 대한 정보는 책 제목과 여러명의 저자가 있다.
+
+```kotlin
+class Book(val title: String, val authors: List<String>)
+
+val books = listOf(
+	Book("Help me Summer", listOf("Maeve", "Charlie")),
+	Book("I Want to go Home", listOf("Maeve")),
+	Book("Agile", listOf("Martinflower")),
+)
+
+println(books.flatMap { it.authors }.toSet())
+// ["Maeve", "Charlie", "Martinflower"]
+```
+
+리스트의 리스트가 있는데 모든 중첩된 리스트의 원소를 한 리스트로 모아야 한다면 flatMap을 떠올릴 수 있다.
+
+하지만 특별히 변환햐여 할 내용이 없다면 리스트의 리스트를 평평하게 펼치기만 하면 된다.
+
+그런 경우 listOfLists.flatten()을 사용하면 된다.
+
 ## 3. 지연 계산(lazy) 컬렉션 연산
+
+map이나 fillter 같은 몇가지 함수를 살펴봤다. 이 함수는 결과 컬렉션을 즉시 생성한다.
+
+이는 컬렉션 함수를 연쇄하면 매 단계마다 계산의 중간 결과를 새로운 컬렉션에 임시로 담는다는 말이다.
+
+시퀀스를 사용하면 중간 임시 컬렉션을 사용하지 않고도 컬렉션 연산을 연쇄할 수 있다.
+
+```kotlin
+people.map(Person::name).filter { it.startsWith('A') }
+```
+
+코틀린 표준 라이브러리 참조 문서에는 filter와 map이 리스트를 반환한다고 써 있다.
+
+이는 이 연괘 호출이 리스트를 2개 만든다는 뜻이다.
+
+원소가 많아질 수록 효율이 떨어진다.
+
+이를 더 효율적으로 만들기 위해서는 각 연산이 컬렉션을 직접 사용하는 대신 시퀀스를 사용하게 만들어야 한다.
+
+```kotlin
+people.asSequence()
+	.map(Person::name)
+	.filter { it.startsWith('A') }
+	.toList()
+```
+
+위 예제는 이전 예제와 똑같은 결과를 반환하지만, 중간 결과를 저장하는 컬렉션이 생기지 않기 때문에 원소가 많은 경우 성능이 눈에 띄게 좋아진다.:pushpin:
+
+코틀린 지연 계산 시퀀스는 Sequence 인터페이스에서 시작한다.
+
+Sequence 인터페이스의 강점은 그 인터페이스 위에 구현된 연산이 계산을 수행하는 방법 때문에 생긴다.
+
+시퀀스의 원소는 필요할 때 비로소 계산된다.
+
+따라서 중간 처리 결과를 저장하지 않고도 연산을 연쇄적으로 적용해서 효율적으로 계산을 수행할 수 있다.
+
+asSequence 확장 함수를 호출하면 어떤 컬렉션이든 시퀀스로 바꿀 수 있다.:heart_eyes:
+
+시퀀스를 리스트를 만들때는 toList를 사용한다.
+
+:pushpin: 왜 시퀀스를 다시 컬렉션으로 되돌려야 될까?
+
+시퀀스의 원소를 차례로 이터레이션해야 한다면 시퀀스를 직접 써도 된다.
+
+하지만 시퀀스 원소를 인덱스를 사용해 접근하는 등의 다른 API 메소드가 필요하다면 시퀀스를 리스트로 변환해야 한다.
 
 ### 1). 시퀀스 연산 실행 : 중간 연산과 최종 연산
 
+시퀀스에 대한 연산은 중간연산과 최종 연산으로 나뉜다.
+
+중간 연산은 다른 시퀀스를 반환한다.
+
+최종 연산은 결과를 반환한다.
+
+```kotlin
+listOf(1, 2, 3, 4, 5).asSequence()
+	.map { print("map($it)"); it * it }
+	.filter { print("filter($it)"); it % 2 == 0 }
+```
+
+위 코드를 실행하면 아무 내용도 출력되지 않는다.
+
+```kotlin
+listOf(1, 2, 3, 4, 5).asSequence()
+	.map { print("map($it)"); it * it }
+	.filter { print("filter($it)"); it % 2 == 0 }
+	.toList()
+```
+컬랙션에 대한 map과 filter는 map함수를 각 원소에 대해 먼저 수행하고, filter를 수행한다.
+
+하지만, 시퀀스에 대한 map과 filter는 모든 연산은 각 원소에 대해 순차적으로 적용된다. 
+
+즉, 첫 번째 원소가 처리되고, 다시 두 번째 원소가 처리되며, 이런 처리가 모든 원소에 대해 적용된다.
+
+따라서 원소에 연산을 차례대로 적용하다가 결과가 얻어지면 그 이후의 원소에 대해서는 변환이 이뤄지지 않을 수 있다.:heart_eyes:
+
+```kotlin
+println(listOf(1, 2, 3, 4).asSequence()
+  .map { it * it }
+  .find { it > 3 }
+)
+```
+위 예제는 원소가 하나씩 각 연산을 처리하면서 find에 만족하는 결과를 찾으면 그 값을 반환하고, 그 이후의 연산을 처리하지 않는다. 
+
+성능 갱!
+
+컬렉션에 대해 수행하는 연산의 순서도 성능에 영향을 끼친다.
+
+```kotlin
+val people = listOf(Person("Alice", 29), Person("Bob", 31), Person("Maeve", 25))
+
+println(
+  people.asSequence()
+  .map(Person::name)
+  .filter { it.length < 4 }
+  .toList()
+)
+// [Bob]
+
+println(
+  people.asSequence()
+    .filter { it.length < 4 }
+    .map(Person::name)
+    .toList()
+)
+// [Bob]
+```
+위 예제에서 map을 먼저 연산한 경우, filter를 먼저 연산한 예제보다 변환횟수가 많다
+
 ## 4. 자바 함수형 인터페이스 사용
+
+어떻게 코틀린 람다를 자바 API에 활용할 수 있는지 살펴보자.
+
+```java
+button.setOnClickListener { /* 클릭시 수행 */}
+```
+
+```java
+public class Button {
+    public void setOnClickListener(OnClickListener l) { ... }
+}
+```
+
+OnClickListener 인터페이스는 onClick이라는 메소드만 선언된 인터페이스다.
+
+```java
+public interface OnClickListener {
+    void onClick(View v);
+}
+```
+자바 8 이전의 자바에서는 setOnClickListener 메소드에게 인자로 넘기기 위해 무명 클래스의 인스턴스를 만들어야만 했다.
+
+```java
+button.setOnClickListener(new OnClickListener() {
+    @Override
+    public void onClick(View b) {
+        ...
+    }
+  }
+)
+```
+코틀린에서는 무명 클래스 인스턴스 대신 람다를 넘길 수 있다.
+
+```kotlin
+button.setOnClickListener {view -> ...}
+```
+이런 코드가 작동하는 이유는 OnClickListener에 추상 메소드가 단 하나만 있기 때문이다.
+
+그런 인터페이스를 함수형 인터페이스 또는 SAM(Single abstract method) 인터페이스라고 한다.
+
+자바 API에는 Runnacle이나 Callable 과 같은 함수형 인터페이스와 그런 함수형 인터페이스를 활용하는 메소드가 많다.
+
+코틀린은 함수형 인터페이스를 인자로 취하는 자바 메소드를 호출할 때 람다를 넘길 수 있게 해준다.
 
 ### 1). 자바 메소드에 람다를 인자로 전달
 
