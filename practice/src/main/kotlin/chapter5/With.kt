@@ -33,6 +33,14 @@ fun alphabetWith2(): String {
 	}
 }
 
+fun alphabetSimple() = buildString {
+	for (letter in 'A'..'Z') {
+		append(letter)
+	}
+
+	append("\nNow I Know the alphabet!")
+}
+
 fun main() {
 	println(alphabet())
 	println(alphabetWith())
