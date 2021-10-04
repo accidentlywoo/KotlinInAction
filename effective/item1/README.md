@@ -1,4 +1,35 @@
-## Fake constructors
+# Consider static factory methods insteaad of constructors
+
+1. Effective Java 복습
+2. Companion factory method
+3. Extension factory
+4. Top-level functions
+5. Fake construtors
+6. Top-level functions and scope
+7. Primary constructor
+
+## 2. Companion factory method
+
+## 4. Top-level functions
+코틀린에서 CFM(Companion object factory method)을 대신해 top-level function(이하 TLF)을 정의하는 것은 일반적이다.
+
+흔히 사용하는 예로는 listOf, setOf 그리고 mapOf가 있다.
+
+마찬가지로 라이브러리 디자이너는 객체생성에 사용되는 TLF을 명세하고 있다.
+
+야들은 정말 널리 사용되고 있다.
+
+문제는 public TLF은 어디에서나 사용할 수 있지만, IDE 팁을 버리기 쉽다.
+
+더 큰 문제는 누군가가 메소드가 아님을 직접적으로 가리키지 않는 이름으로 TLF을 만들 때 시작된다.
+
+TLF을 이용한 객체생성은 List 나 Map같은 작고, 일반적인 객체에 좋은 선택이다.
+
+왜냐하면, ```listOf(1,2,3)```은 ```List.of(1,2,3)```보다 더 간단하고 가독성이 좋다.
+
+하지만, public TLF은 신중하고 의도대로 사용되야합니다. 
+
+## 5. Fake constructors
 훼이크 생성자는 top-level functions(이하 TLF)와 비슷하게 동작한다.
 ```kotlin
 class A()
