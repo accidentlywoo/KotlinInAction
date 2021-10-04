@@ -10,6 +10,13 @@
 
 ---
 
+# Effective Java in Kotlin
+
+## Index
+1. [item 1 - consider static factory methods instead of constructors ](./effective/item1)
+
+---
+
 ## 이모지 갱
 - :green_book: : 컨벤션 후보
 - :heart_eyes: : 좋은점
