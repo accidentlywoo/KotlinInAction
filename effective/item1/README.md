@@ -9,6 +9,124 @@
 7. Primary constructor
 
 ## 2. Companion factory method
+코틀린에서는 static 메서드를 허용하지 않는다.
+
+코틀린에서 자바의 static factory method와 비슷한 것은 일반적으로 companion factory method로 불려진다.
+
+companion 객체에 선언된 factory method를 보자
+
+```kotlin
+class MyList {
+	//...
+	
+	companion object {
+		fun of(vararg i: Int) { /*...*/}
+	}
+}
+```
+
+사용법은 static factory method와 같다.
+
+```kotlin
+fun main() {
+  MyList.of(1,2,3,4)
+}
+```
+(Under the hood - 자동차 후드 아래에서 벌어지는 일이라는 의미. 그것을 몰라도 운전하는데 지장은 없지만, 제대로 하려면 원리를 알 필요가 있는 일)
+
+Companion 객체의 Under the hood는 실제로 이는 싱들톤 클래스라는 것이다.
+
+다음 요소들로 오는 엄청난 이점들이 있다 :
+
+Companion 객체는 다른 클래스로 확장할 수 있다.
+이 방식은 여러 일반 팩토리 메소드를 구현과 동시에  다른 클래스를 제공할 수 있다.
+아래 일반적인 예로 Provider 클래스는 DI를 가볍게 대안책으로 사용할 수 있다.
+
+```kotlin
+abstract class Provider<T> {
+  var original: T? = null
+  var mocked: T? = cull
+  
+  abstract fun create(): T
+  
+  fun get(): T = mocked ?: original ?: create().apply { original = this }
+  
+  fun lazyGet(): Lazy<T> = lazy { get() }
+}
+```
+
+다른 elements를 원한다면, 단지 생성 함수만 구체화하면 된다.
+
+```kotlin
+interface UserRepository {
+	fun getUser(): User
+	
+	companion object: Provider<UserRepository> {
+		override fun create() = UserRepositoryImpl()
+	}
+}
+```
+
+이런 구현는, UserRepository.get() 또는 lazy하게 val user by UserRepository.lazyGet()을 통해 코드 어디서든 repository를 얻을 수 있다.
+
+심지어 다른 테스트나 mocking목적으로 다르게 구체화할 수 있다.
+ex. UserRepository.mocked = object: UserRepository { /*...*/ }
+
+이것은 모든 SFM는 모든 객체에서 수동으로 구현되야하는 자바보다 큰 이득이다.
+
+또,  인터페이스 위임을 이용한 factory 메서드 재사용 방법은 저평가되고 있지만 쌉 이득이다.
+
+```kotlin
+interface Dependency<T> {
+	var mocked: T?
+	fun get(): T
+	fun lazyGet(): Lazy<T> = lazy { get() }
+}
+
+abstract class Provider<T>(val init: ()-> T): Dependency<T> {
+	var original: T? = null
+    override var mocked: T? = null
+  
+    override fun get(): T = mocked ?: original ?: init().apply { original = this }
+}
+
+interface UserRepository {
+	fun getUser(): User
+	
+	companion object: Dependency<UserRepository> by Provider({
+		UserRepositryImpl()
+    })
+}
+```
+사용법은 같다, 하지만, 인터페이스 위임을 사용하는 것은 여러 클래스에서 하나의 companion 객체에서 factory 메서드를 꺼낼 수 있다.
+
+그리고 인터페이스에서 정의된 기능만 가져온다(인터페이스 분리원칙에 따라 좋은 것)
+
+## 3. Extension factory
+static 메소드로 정의되는 것보다 companion 객체 내부에 factory 메서드가 있을때의 다른 이점들 :
+
+companion 객체를 위한 확장 함수를 정의할 수 있다.
+그러므로 외부 라이브러리에서 코틀린 클래스가 정의한 companion factory 메서드를 추가하고 싶다면, 쌉 가능.
+(어떤 companion 객체를 정의하는 한다면)
+
+```kotlin
+interface Tool {
+	companion object { ... }
+}
+
+fun Tool.Companion.createBigTool(...) : BigTool { ...}
+```
+companion 객체에 이름을 붙일 때.
+
+```kotlin
+interface Too {
+	companion object Factory { ... }
+}
+
+fun Tool.Factory.createBigTool(...) : BigTool { ...}
+```
+
+확장 factory 메서드는 우리의 코드에다가 외부 라이브러리사용 공유를 강려크하게 가능하게 해준다.
 
 ## 4. Top-level functions
 코틀린에서 CFM(Companion object factory method)을 대신해 top-level function(이하 TLF)을 정의하는 것은 일반적이다.

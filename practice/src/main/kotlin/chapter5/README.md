@@ -18,11 +18,11 @@
 
 ```java
 button.setOnClickListener(new OnClickListener(){
-@Override
-public void onClick(View view){
+  @Override
+  public void onClick(View view){
         /* 클릭 시 수행할 동작 */
-        }
-        });
+  }
+});
 ```
 
 코틀린에서는 자바8과 마찬가지로 람다를 쓸 수 있다.
@@ -263,7 +263,7 @@ fun printProblemCounts(response: Collection<String>) {
 
 기본적으로 함수 안에 정의된 로컬 변수의 생명주기는 함수가 반환되면 끝난다.
 
-하지만 어떠 함수가 자신의 로컬 변수를 포획한 람다를 반환하거나 다른 변수에 저장한다면 로컬 변수의 생명주기와 함수의 생명주기가 달라질 수 있다.
+하지만 어떤 함수가 자신의 로컬 변수를 포획한 람다를 반환하거나 다른 변수에 저장한다면 로컬 변수의 생명주기와 함수의 생명주기가 달라질 수 있다.
 
 람다가 포획한 변수에따라 생명주기가 호도리~ (209페이지 읽기 정리 Pass)
 
